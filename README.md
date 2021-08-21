@@ -3,13 +3,17 @@
 
 ```sh
 
-borg init --encryption=SPECIFY ssh://borg@127.0.0.1:2200/repository
+borg init --encryption=SPECIFY ssh://borg@127.0.0.1:2200/repository/NAME
 
 ```
 
 ```sh
-borg create --stats ssh://borg@127.0.0.1:2200//repository::{hostname}-{utcnow}  ~/documents ~/files
+borg create --stats ssh://borg@127.0.0.1:2200/repository/NAME::{hostname}-{utcnow}  ~/documents ~/files
 ```
+
+## Regular backups
+
+Consider using raw borg executable, some wrapper like borgmatic (see `borgmatic-example`), or even UI, like vorta
 
 
 ## Credits

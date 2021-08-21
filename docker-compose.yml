@@ -1,15 +1,16 @@
 version: '3.8'
 
 services:
-  sshd:
-    image: voronenko/nas-borg
+  borgsshd:
+    image: voronenko/nas-backup:latest
     environment:
+# master key
       SSH_CLIENT_PUBLIC_KEYS: |
-        ssh-rsa ...
-        ssh-rsa ...
-      SSH_CLIENT_PUBLIC_KEYS_APPEND_ONLY: |
-        ssh-rsa ...
-        ssh-rsa ...
+        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDkDkJR4F63sqioKgoBtMSCx5gbfTwlz1qmLrzszPOvM
+# ssh keys of devices performing backup
+#      SSH_CLIENT_PUBLIC_KEYS_APPEND_ONLY: |
+#        ssh-rsa ...
+#        ssh-rsa ...
     read_only: true
     volumes:
     - type: volume
@@ -24,13 +25,13 @@ services:
       target: /home/borg/.ssh # authorized_keys
       tmpfs:
         # nosuid,nodev,noexec added by default
-        mode: '1777'
+#        mode: '1777'
         size: 16k
     - type: tmpfs
       # > FileNotFoundError: [Errno 2] No usable temporary directory found [...]
       target: /tmp
       tmpfs:
-        mode: '1777'
+#        mode: '1777'
         size: 1M
     ports:
     - '127.0.0.1:2200:2200'
@@ -42,8 +43,14 @@ services:
 volumes:
   ssh_host_keys:
   repository:
-#    driver: local
-#    driver_opts:
-#      o: bind
-#      type: none
-#      device: /disk1/borgbackup
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/slavko/personal/DEVOPS_EXPERIMENTS/nas-borg/data
+  ssh_host_keys: 
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/slavko/personal/DEVOPS_EXPERIMENTS/nas-borg/config
+

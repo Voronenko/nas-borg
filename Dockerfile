@@ -4,17 +4,21 @@ ARG BORGBACKUP_PACKAGE_VERSION=1.1.16-r1
 ARG OPENSSH_SERVER_PACKAGE_VERSION=8.6_p1-r2
 ARG TINI_PACKAGE_VERSION=0.19.0-r0
 ARG USER=borg
+ARG USERID=1000
 ENV SSHD_HOST_KEYS_DIR=/etc/ssh/host_keys
 ENV REPO_PATH=/repository
 RUN apk add --no-cache \
         borgbackup="$BORGBACKUP_PACKAGE_VERSION" \
         openssh-server="$OPENSSH_SERVER_PACKAGE_VERSION" \
         tini=$TINI_PACKAGE_VERSION \
-    && adduser -S -s /bin/ash "$USER" \
+    && adduser -u $USERID -S -s /bin/ash "$USER" \
     && mkdir "$SSHD_HOST_KEYS_DIR" \
     && chown -c "$USER" "$SSHD_HOST_KEYS_DIR" \
     && mkdir "$REPO_PATH" \
     && chown -c "$USER" "$REPO_PATH"
+#    && mkdir -p /home/$USER/.ssh \
+#    && chown -c "$USER" /home/$USER/.ssh
+   
 VOLUME $SSHD_HOST_KEYS_DIR
 VOLUME $REPO_PATH
 
