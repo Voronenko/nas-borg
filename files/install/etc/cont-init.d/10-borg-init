@@ -2,18 +2,25 @@
 
 set -eu
 
+SSHD_HOST_KEYS_DIR=${SSHD_HOST_KEYS_DIR:-/etc/ssh/host_keys}
+REPO_PATH=${REPO_PATH:-/repository}
+
 # sync with https://github.com/fphammerle/docker-gitolite/blob/master/entrypoint.sh
 if [ ! -f "/etc/ssh/host_keys_initial/rsa" ]; then
     ssh-keygen -t rsa -b 4096 -N '' -f "$SSHD_HOST_KEYS_DIR/rsa"
+    cp $SSHD_HOST_KEYS_DIR/rsa* /etc/ssh/host_keys_initial/
 else
     cp /etc/ssh/host_keys_initial/rsa* $SSHD_HOST_KEYS_DIR/
     chown root:root $SSHD_HOST_KEYS_DIR/rsa*
+    chmod 600 $SSHD_HOST_KEYS_DIR/rsa*
 fi
 if [ ! -f "/etc/ssh/host_keys_initial/ed25519" ]; then
     ssh-keygen -t ed25519 -N '' -f "$SSHD_HOST_KEYS_DIR/ed25519"
+    cp $SSHD_HOST_KEYS_DIR/ed25519* /etc/ssh/host_keys_initial/
 else
     cp /etc/ssh/host_keys_initial/ed25519* $SSHD_HOST_KEYS_DIR/
     chown root:root $SSHD_HOST_KEYS_DIR/rsa*
+    chmod 600 $SSHD_HOST_KEYS_DIR/rsa*
 fi
 unset SSHD_HOST_KEYS_DIR
 

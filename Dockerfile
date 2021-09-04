@@ -19,7 +19,6 @@ RUN apk add --no-cache \
         curl \
     && adduser -u $USERID -S -s /bin/ash "$USER" \
     && mkdir "$SSHD_HOST_KEYS_DIR" \
-    && chown -c "$USER" "$SSHD_HOST_KEYS_DIR" \
     && mkdir "$REPO_PATH" \
     && chown -c "$USER" "$REPO_PATH" \
     && curl -sLo /usr/local/bin/ep https://github.com/kreuzwerker/envplate/releases/download/v0.0.8/ep-linux \

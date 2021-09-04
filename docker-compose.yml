@@ -3,6 +3,9 @@ services:
   borgsshd:
     image: voronenko/nas-backup:latest
     restart: unless-stopped
+    environment:
+      SSHD_HOST_KEYS_DIR: /etc/ssh/host_keys
+      REPO_PATH: /repository
     volumes:
     - type: volume
       source: ssh_host_keys
