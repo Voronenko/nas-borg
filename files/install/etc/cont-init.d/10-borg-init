@@ -1,0 +1,35 @@
+#!/usr/bin/with-contenv bash
+
+set -eu
+
+# sync with https://github.com/fphammerle/docker-gitolite/blob/master/entrypoint.sh
+if [ ! -f "/etc/ssh/host_keys_initial/rsa" ]; then
+    ssh-keygen -t rsa -b 4096 -N '' -f "$SSHD_HOST_KEYS_DIR/rsa"
+else
+    cp /etc/ssh/host_keys_initial/rsa* $SSHD_HOST_KEYS_DIR/
+    chown root:root $SSHD_HOST_KEYS_DIR/rsa*
+fi
+if [ ! -f "/etc/ssh/host_keys_initial/ed25519" ]; then
+    ssh-keygen -t ed25519 -N '' -f "$SSHD_HOST_KEYS_DIR/ed25519"
+else
+    cp /etc/ssh/host_keys_initial/ed25519* $SSHD_HOST_KEYS_DIR/
+    chown root:root $SSHD_HOST_KEYS_DIR/rsa*
+fi
+unset SSHD_HOST_KEYS_DIR
+
+mkdir -p ~/.ssh
+cp $SSHD_HOST_KEYS_DIR/authorized_keys ~/.ssh/authorized_keys
+/usr/local/bin/ep -v ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+
+# -- restrict-to-path   restricts repository access to PATH. Can be specified multiple times to allow the client access
+# to several directories. Access to all sub-directories is granted implicitly; PATH doesn’t need to directly point to a repository.
+
+#       --restrict-to-repository        restrict repository access. Only the repository located at PATH (no sub-directories
+# are considered) is accessible. Can be specified multiple times to allow the client access to several repositories.
+# Unlike --restrict-to-path sub-directories are not accessible; PATH needs to directly point at a repository location.
+# PATH may be an empty directory or the last element of PATH may not exist, in which case the client may initialize a repository there
+
+
+set -x
+

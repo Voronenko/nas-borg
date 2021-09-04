@@ -10,3 +10,7 @@ install-borg-borgmatic:
 	pip3 install --upgrade borgmatic
 down:
 	docker-compose down -v
+
+generate-initial-host-keys:
+	ssh-keygen -t rsa -b 4096 -N '' -f "config/rsa"
+	ssh-keygen -t ed25519 -N '' -f "config/ed25519"

@@ -3,19 +3,10 @@ services:
   borgsshd:
     image: voronenko/nas-backup:latest
     restart: unless-stopped
-    environment:
-# master key
-      SSH_CLIENT_PUBLIC_KEYS: |
-        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDkDkJR4F63sqioKgoBtMSCx5gbfTwlz1qmLrzszPOvM
-# ssh keys of devices performing backup
-#      SSH_CLIENT_PUBLIC_KEYS_APPEND_ONLY: |
-#        ssh-rsa ...
-#        ssh-rsa ...
-    read_only: true
     volumes:
     - type: volume
       source: ssh_host_keys
-      target: /etc/ssh/host_keys
+      target: /etc/ssh/host_keys_initial
       read_only: false
     - type: volume
       source: repository
@@ -47,10 +38,10 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: /share/SLAVKO.P/BORGBACKUP
+      device: $PWD/data
   ssh_host_keys:
     driver_opts:
       o: bind
       type: none
-      device: /share/SLAVKO.P/BORGBACKUP/config
+      device: $PWD/config
 
