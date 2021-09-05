@@ -3,19 +3,11 @@ services:
   borgsshd:
     image: voronenko/nas-backup:latest
     restart: unless-stopped
-    environment:
-# master key
-      SSH_CLIENT_PUBLIC_KEYS: |
-        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDkDkJR4F63sqioKgoBtMSCx5gbfTwlz1qmLrzszPOvM
-# ssh keys of devices performing backup
-#      SSH_CLIENT_PUBLIC_KEYS_APPEND_ONLY: |
-#        ssh-rsa ...
-#        ssh-rsa ...
-    read_only: true
+    readonly: false
     volumes:
     - type: volume
       source: ssh_host_keys
-      target: /etc/ssh/host_keys
+      target: /etc/ssh/host_keys_initial
       read_only: false
     - type: volume
       source: repository
@@ -35,8 +27,8 @@ services:
         size: 1M
     ports:
     - '127.0.0.1:2200:2200'
-    cap_drop: [ALL]
-    security_opt: [no-new-privileges]
+#    cap_drop: [ALL]
+#    security_opt: [no-new-privileges]
     cpus: 0.8
     mem_limit: 128M
 
