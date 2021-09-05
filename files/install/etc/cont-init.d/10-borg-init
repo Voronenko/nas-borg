@@ -1,0 +1,45 @@
+#!/usr/bin/with-contenv bash
+
+set -eu
+
+printenv
+
+USER=${USER:-borg}
+USERID=${USERID:-1000}
+
+# sync with https://github.com/fphammerle/docker-gitolite/blob/master/entrypoint.sh
+if [ ! -f "/etc/ssh/host_keys_initial/rsa" ]; then
+    ssh-keygen -t rsa -b 4096 -N '' -f "${SSHD_HOST_KEYS_DIR}/rsa"
+    cp $SSHD_HOST_KEYS_DIR/rsa* /etc/ssh/host_keys_initial/
+else
+    cp /etc/ssh/host_keys_initial/rsa* $SSHD_HOST_KEYS_DIR/
+    chown root:root $SSHD_HOST_KEYS_DIR/rsa*
+    chmod 600 $SSHD_HOST_KEYS_DIR/rsa*
+fi
+if [ ! -f "/etc/ssh/host_keys_initial/ed25519" ]; then
+    ssh-keygen -t ed25519 -N '' -f "${SSHD_HOST_KEYS_DIR}/ed25519"
+    cp $SSHD_HOST_KEYS_DIR/ed25519* /etc/ssh/host_keys_initial/
+else
+    cp /etc/ssh/host_keys_initial/ed25519* $SSHD_HOST_KEYS_DIR/
+    chown root:root $SSHD_HOST_KEYS_DIR/rsa*
+    chmod 600 $SSHD_HOST_KEYS_DIR/ed25519*
+fi
+
+mkdir -p /home/${USER}/.ssh
+cp "/etc/ssh/host_keys_initial/authorized_keys" /home/${USER}/.ssh/authorized_keys
+/usr/local/bin/ep -v /home/${USER}/.ssh/authorized_keys
+chmod 600 /home/${USER}/.ssh/authorized_keys
+chown $USER:root /home/${USER}/.ssh
+chown $USER:root /home/${USER}/.ssh/authorized_keys
+
+# -- restrict-to-path   restricts repository access to PATH. Can be specified multiple times to allow the client access
+# to several directories. Access to all sub-directories is granted implicitly; PATH doesn’t need to directly point to a repository.
+
+#       --restrict-to-repository        restrict repository access. Only the repository located at PATH (no sub-directories
+# are considered) is accessible. Can be specified multiple times to allow the client access to several repositories.
+# Unlike --restrict-to-path sub-directories are not accessible; PATH needs to directly point at a repository location.
+# PATH may be an empty directory or the last element of PATH may not exist, in which case the client may initialize a repository there
+
+
+set -x
+
