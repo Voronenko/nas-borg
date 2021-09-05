@@ -4,6 +4,7 @@ ARG BORGBACKUP_PACKAGE_VERSION=1.1.16-r1
 ARG OPENSSH_SERVER_PACKAGE_VERSION=8.6_p1-r2
 ARG USER=borg
 ARG USERID=1000
+ARG USERNEVERUSEDPASSWORD=HLYFaIumfEvxsxIg1gd3PnwmR07Qd5eUHNt5goyzUYDkU9vnNnhWhE9MZ7ALv911Mvwe1KxtuMouZoOTbfZfvJ1fZKfxRwgNwRk
 ENV SSHD_HOST_KEYS_DIR=/etc/ssh/host_keys
 ENV REPO_PATH=/repository
 
@@ -15,9 +16,11 @@ ADD files/install  /
 RUN apk add --no-cache \
         borgbackup="$BORGBACKUP_PACKAGE_VERSION" \
         openssh-server="$OPENSSH_SERVER_PACKAGE_VERSION" \
+        openssl \
         bash \
         curl \
-    && adduser -u $USERID -S -s /bin/ash "$USER" \
+    && adduser -u $USERID -S -s /bin/ash "$USER" --disabled-password     \
+    && echo "${USER}:${USERNEVERUSEDPASSWORD}"|chpasswd \
     && mkdir "$SSHD_HOST_KEYS_DIR" \
     && mkdir "$REPO_PATH" \
     && chown -c "$USER" "$REPO_PATH" \

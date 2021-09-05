@@ -4,8 +4,8 @@ set -eu
 
 printenv
 
-echo "===="
-echo $SSHD_HOST_KEYS_DIR
+USER=${USER:-borg}
+USERID=${USERID:-1000}
 
 # sync with https://github.com/fphammerle/docker-gitolite/blob/master/entrypoint.sh
 if [ ! -f "/etc/ssh/host_keys_initial/rsa" ]; then
@@ -25,10 +25,12 @@ else
     chmod 600 $SSHD_HOST_KEYS_DIR/ed25519*
 fi
 
-mkdir -p ~/.ssh
-cp "/etc/ssh/host_keys_initial/authorized_keys" ~/.ssh/authorized_keys
-/usr/local/bin/ep -v ~/.ssh/authorized_keys
-chmod 600 ~/.ssh/authorized_keys
+mkdir -p /home/${USER}/.ssh
+cp "/etc/ssh/host_keys_initial/authorized_keys" /home/${USER}/.ssh/authorized_keys
+/usr/local/bin/ep -v /home/${USER}/.ssh/authorized_keys
+chmod 600 /home/${USER}/.ssh/authorized_keys
+chown $USER:root /home/${USER}/.ssh
+chown $USER:root /home/${USER}/.ssh/authorized_keys
 
 # -- restrict-to-path   restricts repository access to PATH. Can be specified multiple times to allow the client access
 # to several directories. Access to all sub-directories is granted implicitly; PATH doesn’t need to directly point to a repository.

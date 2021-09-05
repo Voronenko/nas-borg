@@ -29,8 +29,9 @@ services:
         size: 1M
     ports:
     - '127.0.0.1:2200:2200'
-    cap_drop: [ALL]
-    security_opt: [no-new-privileges]
+#    cap_drop: [ALL]
+# --security-opt="no-new-privileges:true" Disable container processes from gaining new privileges
+#    security_opt: [no-new-privileges]
     cpus: 0.8
     mem_limit: 128M
 
